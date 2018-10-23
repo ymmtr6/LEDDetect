@@ -11,3 +11,8 @@ OpenCVを用いてLEDの発光色を検出させる．
 ```
 $ pip install opencv-python
 ```
+
+### 実行(実装まだ)
+```
+$ python run.py
+```
