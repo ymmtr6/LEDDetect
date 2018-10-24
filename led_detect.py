@@ -41,13 +41,20 @@ class ColorLEDDetecter(object):
     """
     輪郭検出．座標を抽出する．
     """
-    def contours(self, image, color, options="time"):
-        _, contours, history = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    def contours(self, org_image, mask, color, options="time"):
+        _, contours, history = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         for i , cnt in enumerate(contours):
             cnt = np.squeeze(cnt)
             # log
             print("[{}]{}: {}".format(options, color, cnt[0]))
             # 描画関数．
+            if org_image is not None:
+                fontType = cv2.FONT_HERSHEY_SIMPLEX
+                try:
+                    cv2.putText(org_image, color,(cnt[0][0], cnt[0][1]), fontType, 1, (0, 0, 255), 1)
+                except:
+                    pass
+
 
     """
     video output
@@ -74,13 +81,13 @@ class ColorLEDDetecter(object):
                     # m = cv2.bitwise_and(m, m, mask=mask)
 
                     # 領域抽出によって対象座標を見つける．
-                    self.contours(m, color)
+                    self.contours(frame, m, color)
                     # 各カラーのmaskを合算する．
-                    mask = cv2.bitwise_or(mask, m)
+                    #mask = cv2.bitwise_or(mask, m)
                 # 全てのmaskを適用
-                out = cv2.bitwise_and(frame, frame, mask=mask)
+                #frame = cv2.bitwise_and(frame, frame, mask=mask)
                 # 動画に出力する．
-                writer.write(out)
+                writer.write(frame)
             else:
                 break
 
