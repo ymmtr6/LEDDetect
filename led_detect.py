@@ -42,9 +42,14 @@ class ColorLEDDetecter(object):
     輪郭検出．座標を抽出する．
     """
     def contours(self, org_image, mask, color, options="time"):
-        _, contours, history = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        # 輪郭の選択　もっとも外側のみ
+        retr = cv2.RETR_EXTERNAL
+        # 外郭点の保持の方法．近似
+        approx = cv2.CHAIN_APPROX_SIMPLE
+        _, contours, history = cv2.findContours(mask, cv2.RETR_EXTERNAL, approx)
         for i , cnt in enumerate(contours):
-            cnt = np.squeeze(cnt)
+            # 無駄な次元削減
+            cnt = np.squeeze(cnt, axis=1)
             # log
             print("[{}]{}: {}".format(options, color, cnt[0]))
             # 描画関数．
@@ -54,6 +59,20 @@ class ColorLEDDetecter(object):
                     cv2.putText(org_image, color,(cnt[0][0], cnt[0][1]), fontType, 1, (0, 0, 255), 1)
                 except:
                     pass
+
+    """
+    画像の前処理 (ぼかしてノイズを減らす)
+    """
+    def smooth(self, img, box=(11, 11)):
+        # 平均フィルタ を使った平滑化
+        # im_smooth = cv2.blur(img, box)
+
+        # 中央値フィルタ 　を使った平滑化
+        # im_smooth = cv2.medianBlur(img, box[0])
+
+        # ガウスフィルタによる平滑化
+        im_smooth = cv2.GaussianBlur(img, box, 0)
+        return im_smooth
 
 
     """
@@ -69,6 +88,7 @@ class ColorLEDDetecter(object):
         while self.cap.isOpened():
             ret, frame = self.cap.read()
             if ret:
+                frame = self.smooth(frame, box=(15, 15))
                 # HSV空間に変換
                 frame_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
                 # 各色を検出する．
@@ -81,7 +101,7 @@ class ColorLEDDetecter(object):
                     # m = cv2.bitwise_and(m, m, mask=mask)
 
                     # 領域抽出によって対象座標を見つける．
-                    self.contours(frame, m, color)
+                    self.contours(frame, m, color, options=str(self.cap.get(1)))
                     # 各カラーのmaskを合算する．
                     #mask = cv2.bitwise_or(mask, m)
                 # 全てのmaskを適用
