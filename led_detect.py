@@ -2,7 +2,9 @@ import cv2
 import numpy as np
 
 """
-LEDのカラー値を算出する．
+LEDのカラーと
+
+author Riku Yamamoto
 """
 class ColorLEDDetecter(object):
 
@@ -12,6 +14,7 @@ class ColorLEDDetecter(object):
     """
     def __init__(self, input="test.mov"):
         self.cap = cv2.VideoCapture(input)
+        self.mask = cv2.imread("mask.png", cv2.IMREAD_GRAYSCALE)
 
     """
     HSV領域をカラーによって指定する．opencvでは色相は360°ではなく180°で考える．
@@ -74,7 +77,6 @@ class ColorLEDDetecter(object):
         im_smooth = cv2.GaussianBlur(img, box, 0)
         return im_smooth
 
-
     """
     video output
     """
@@ -95,10 +97,11 @@ class ColorLEDDetecter(object):
                 mask = np.zeros(frame_hsv.shape[:2], dtype=np.uint8)
                 # 各色に適応
                 for color in list(["green", "blue", "red", "skyblue", "yellow", "purple"]):
+                    # color情報を取得し，画像の色調範囲を指定する．
                     lower, upper = self._get_range(color)
                     m = cv2.inRange(frame_hsv, lower, upper)
-                    # 必要ならマスク演算を行う (意図しない部分の表示 )
-                    # m = cv2.bitwise_and(m, m, mask=mask)
+                    # 必要ならマスク演算を行う (意図しない部分を消す )
+                    m = cv2.bitwise_and(m, m, mask=self.mask)
 
                     # 領域抽出によって対象座標を見つける．
                     self.contours(frame, m, color, options=str(self.cap.get(1)))
