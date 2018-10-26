@@ -18,6 +18,15 @@ $ pip install opencv-python
 $ pip install numpy
 ```
 
+#### mask画像生成
+
+マスク画像を生成する．デフォルトは端20％を対象外とする．
+全てを対象とする場合はall, マニュアルで決めたい場合は，manual を
+-p オプションの後に入れる．
+```
+$ python mask_generator.py -i [movie_path] -o [output_path]
+```
+
 ### 実行(実装まだ)
 ```
 $ python run.py

@@ -40,6 +40,9 @@ if args.process == "center":
     pt2 = (int(width * 0.8), int(height * 0.8))
     cv2.rectangle(image, pt1, pt2, (255, 255, 255), -1)
 
+elif args.process == "all":
+    cv2.rectangle(image, (0, 0), (width, height), (255, 255, 255), -1)
+
 elif args.process == "manual":
     # 関数に移譲
     manual(image, height, width)
