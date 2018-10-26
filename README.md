@@ -15,12 +15,16 @@ OpenCVを用いてLEDの発光色と座標情報を検出する．手順は以�
 ### 導入
 ```
 $ pip install opencv-python
+$ pip install numpy
 ```
 
 ### 実行(実装まだ)
 ```
 $ python run.py
 ```
+
+#### 実行時の注意
+* 2160×2160の動画入力を前提としている（mask画像との不一致を起こすので別サイズの動画の場合は注意）
 
 ## License
 MIT
