@@ -2,4 +2,4 @@
 *.png
 *.mp4
 *.mov
-
+!mask.png

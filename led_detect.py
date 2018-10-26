@@ -51,7 +51,7 @@ class ColorLEDDetecter(object):
         approx = cv2.CHAIN_APPROX_SIMPLE
         _, contours, history = cv2.findContours(mask, cv2.RETR_EXTERNAL, approx)
         for i , cnt in enumerate(contours):
-            # 無駄な次元削減
+            # 次元削減
             cnt = np.squeeze(cnt, axis=1)
             # log
             print("[{}]{}: {}".format(options, color, cnt[0]))
@@ -59,9 +59,10 @@ class ColorLEDDetecter(object):
             if org_image is not None:
                 fontType = cv2.FONT_HERSHEY_SIMPLEX
                 try:
-                    cv2.putText(org_image, color,(cnt[0][0], cnt[0][1]), fontType, 1, (0, 0, 255), 1)
+                    cv2.putText(org_image, "[{}]{}".format(i, color),(cnt[0][0], cnt[0][1]), fontType, 1, (0, 0, 255), 1)
                 except:
                     pass
+
 
     """
     画像の前処理 (ぼかしてノイズを減らす)
